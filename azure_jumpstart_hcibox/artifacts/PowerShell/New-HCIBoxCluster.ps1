@@ -1483,14 +1483,16 @@ function Set-HCIDeployPrereqs {
     }
 
     Connect-AzAccount -Identity -AccountId $env:managedIdentityClientId -Subscription $subId
+    $tenantId = (Get-AzSubscription -SubscriptionId 0d2c26d5-05bc-455d-97bc-0e0a103251ab).TenantId
     $armtoken = ConvertFrom-SecureStringToPlainText -SecureString ((Get-AzAccessToken -AsSecureString).Token)
     foreach ($node in $HCIBoxConfig.NodeHostConfig) {
-        Invoke-Command -VMName $node.Hostname -Credential $localCred -ArgumentList $env:subscriptionId, $armtoken, $env:managedIdentityClientId, $env:resourceGroup, $env:azureLocation -ScriptBlock {
+        Invoke-Command -VMName $node.Hostname -Credential $localCred -ArgumentList $env:subscriptionId, $tenantId, $armtoken, $env:managedIdentityClientId, $env:resourceGroup, $env:azureLocation -ScriptBlock {
             $subId = $args[0]
-            $token = $args[1]
-            $clientId = $args[2]
-            $resourceGroup = $args[3]
-            $location = $args[4]
+            $tenantId = $args[1]
+            $token = $args[2]
+            $clientId = $args[3]
+            $resourceGroup = $args[4]
+            $location = $args[5]
 
             function ConvertFrom-SecureStringToPlainText {
                 param (
@@ -1529,7 +1531,7 @@ function Set-HCIDeployPrereqs {
             Get-NetAdapter StorageB | Disable-NetAdapter -Confirm:$false | Out-Null
 
             #Invoke the registration script.
-            Invoke-AzStackHciArcInitialization -SubscriptionID $subId -ResourceGroup $resourceGroup -Region $location -Cloud "AzureCloud" -ArmAccessToken $token -AccountID $clientId -ErrorAction Continue
+            Invoke-AzStackHciArcInitialization -SubscriptionID $subId -ResourceGroup $resourceGroup -Region $location -Cloud "AzureCloud" -ArmAccessToken $token -AccountID $clientId -TenantID $tenantId -ErrorAction Continue
 
             Get-NetAdapter StorageA | Enable-NetAdapter -Confirm:$false | Out-Null
             Get-NetAdapter StorageB | Enable-NetAdapter -Confirm:$false | Out-Null

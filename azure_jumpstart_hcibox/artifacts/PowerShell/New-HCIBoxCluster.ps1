@@ -1482,14 +1482,15 @@ function Set-HCIDeployPrereqs {
         }
     }
 
-    Connect-AzAccount -Identity -AccountId $managedIdentityClientId -Subscription $subId
+    Connect-AzAccount -Identity -AccountId $env:managedIdentityClientId -Subscription $subId
     $armtoken = ConvertFrom-SecureStringToPlainText -SecureString ((Get-AzAccessToken -AsSecureString).Token)
     foreach ($node in $HCIBoxConfig.NodeHostConfig) {
-        Invoke-Command -VMName $node.Hostname -Credential $localCred -ArgumentList $env:subscriptionId, $armtoken, $env:resourceGroup, $env:azureLocation -ScriptBlock {
+        Invoke-Command -VMName $node.Hostname -Credential $localCred -ArgumentList $env:subscriptionId, $armtoken, $env:managedIdentityClientId, $env:resourceGroup, $env:azureLocation -ScriptBlock {
             $subId = $args[0]
             $token = $args[1]
-            $resourceGroup = $args[2]
-            $location = $args[3]
+            $clientId = $args[2]
+            $resourceGroup = $args[3]
+            $location = $args[4]
 
             function ConvertFrom-SecureStringToPlainText {
                 param (

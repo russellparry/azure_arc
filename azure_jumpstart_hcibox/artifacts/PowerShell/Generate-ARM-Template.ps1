@@ -26,9 +26,6 @@ $arcNodeResourceIds = $arcNodes.Id | ConvertTo-Json -AsArray
 #     $ErrorActionPreference = "Stop"
 # }
 
-# Convert user credentials to base64
-$SPNobjectId=$(az ad sp show --id $env:spnClientId --query id -o tsv)
-
 # Construct OU path
 $domainName = $HCIBoxConfig.SDNDomainFQDN.Split('.')
 $ouPath = "OU=$($HCIBoxConfig.LCMADOUName)"
@@ -72,10 +69,6 @@ $hciParams = "$env:HCIBoxDir\hci.parameters.json"
 (Get-Content -Path $hciParams) -replace 'localAdminPassword-staging', $($HCIBoxConfig.SDNAdminPassword) | Set-Content -Path $hciParams
 (Get-Content -Path $hciParams) -replace 'AzureStackLCMAdminUserName-staging', $($HCIBoxConfig.LCMDeployUsername) | Set-Content -Path $hciParams
 (Get-Content -Path $hciParams) -replace 'AzureStackLCMAdminAdminPassword-staging', $($HCIBoxConfig.SDNAdminPassword) | Set-Content -Path $hciParams
-(Get-Content -Path $hciParams) -replace 'arbDeploymentAppId-staging', $($env:spnClientId) | Set-Content -Path $hciParams
-(Get-Content -Path $hciParams) -replace 'arbDeploymentAppSecret-staging', $($env:spnClientSecret) | Set-Content -Path $hciParams
-(Get-Content -Path $hciParams) -replace 'arbDeploymentSPNObjectID-staging', $SPNobjectId | Set-Content -Path $hciParams
-(Get-Content -Path $hciParams) -replace 'hciResourceProviderObjectID-staging', $env:spnProviderId | Set-Content -Path $hciParams
 (Get-Content -Path $hciParams) -replace 'domainFqdn-staging', $($HCIBoxConfig.SDNDomainFQDN) | Set-Content -Path $hciParams
 (Get-Content -Path $hciParams) -replace 'namingPrefix-staging', $($HCIBoxConfig.LCMDeploymentPrefix) | Set-Content -Path $hciParams
 (Get-Content -Path $hciParams) -replace 'adouPath-staging', $ouPath | Set-Content -Path $hciParams

@@ -1,7 +1,6 @@
 $ErrorActionPreference = $env:ErrorActionPreference
 
 $Env:HCIBoxLogsDir = "$Env:HCIBoxDir\Logs"
-$tenantId = $env:spnTenantId
 $subscriptionId = $env:subscriptionId
 $resourceGroup = $env:resourceGroup
 
@@ -11,7 +10,7 @@ Start-Transcript -Path $logFilePath -Force -ErrorAction SilentlyContinue
 
 $DeploymentProgressString = "Installing WinGet packages..."
 
-Connect-AzAccount -Identity -Tenant $tenantId -Subscription $subscriptionId
+Connect-AzAccount -Identity -Subscription $subscriptionId
 
 $tags = Get-AzResourceGroup -Name $resourceGroup | Select-Object -ExpandProperty Tags
 

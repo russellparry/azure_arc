@@ -3,18 +3,11 @@
 @description('Prefix for resource group, i.e. {name}-rg')
 param envName string
 
-@description('Azure service principal client id')
-param spnClientId string = 'null'
+@description('Resource id of the managed identity to be used by the VM')
+param managedIdentityResourceId string
 
-@description('Azure service principal client secret')
-@secure()
-param spnClientSecret string = 'null'
-
-@description('Azure AD tenant id for your service principal')
-param spnTenantId string = 'null'
-
-@description('Azure AD object id for your Microsoft.AzureStackHCI resource provider')
-param spnProviderId string ='null'
+@description('Client id of the managed identity to be used by the VM')
+param managedIdentityClientId string
 
 @description('Username for Windows account')
 param windowsAdminUsername string = 'arcdemo'
@@ -94,10 +87,8 @@ module hostDeployment 'host/host.bicep' = {
   params: {
     windowsAdminUsername: windowsAdminUsername
     windowsAdminPassword: windowsAdminPassword
-    spnClientId: spnClientId
-    spnClientSecret: spnClientSecret
-    spnTenantId: spnTenantId
-    spnProviderId: spnProviderId
+    managedIdentityClientId: managedIdentityClientId
+    managedIdentityResourceId: managedIdentityResourceId
     workspaceName: logAnalyticsWorkspaceName
     stagingStorageAccountName: storageAccountDeployment.outputs.storageAccountName
     templateBaseUrl: templateBaseUrl

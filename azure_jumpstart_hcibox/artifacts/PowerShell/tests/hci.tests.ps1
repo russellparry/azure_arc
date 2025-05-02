@@ -7,10 +7,9 @@ BeforeDiscovery {
     $VMs = $HCIBoxConfig.NodeHostConfig.Hostname
     $clusters = @($HCIBoxConfig.ClusterName)
 
-    # Login to Azure PowerShell with service principal provided by user
-    $spnpassword = ConvertTo-SecureString $env:spnClientSecret -AsPlainText -Force
-    $spncredential = New-Object System.Management.Automation.PSCredential ($env:spnClientId, $spnpassword)
-    Connect-AzAccount -ServicePrincipal -Credential $spncredential -Tenant $env:spntenantId -Subscription $env:subscriptionId
+    # Login to Azure PowerShell with the managed identity provided by user
+    Connect-AzAccount -Identity -AccountId $env:managedIdentityClientId -Subscription $env:subscriptionId
+
 
 }
 

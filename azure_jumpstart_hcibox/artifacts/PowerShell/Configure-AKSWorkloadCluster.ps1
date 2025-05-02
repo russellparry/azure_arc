@@ -19,9 +19,7 @@ $domainCred = new-object -typename System.Management.Automation.PSCredential `
 Write-Host 'Creating credentials and connecting to Azure'
 $subId = $env:subscriptionId
 $rg = $env:resourceGroup
-$spnClientId = $env:spnClientId
-$spnSecret = $env:spnClientSecret
-$spnTenantId = $env:spnTenantId
+$managedIdentityClientId = $env:managedIdentityClientId
 $location = $env:azureLocation
 $lnetName = "hcibox-aks-lnet-vlan110"
 $customLocName = $HCIBoxConfig.rbCustomLocationName
@@ -29,7 +27,7 @@ $WarningPreference = "SilentlyContinue"
 $ErrorActionPreference = "SilentlyContinue"
 Invoke-Command -VMName "$($HCIBoxConfig.NodeHostConfig[0].Hostname)" -Credential $domainCred -ArgumentList $HCIBoxConfig -ScriptBlock {
     $HCIBoxConfig = $args[0]
-    az login --service-principal --username $using:spnClientID --password=$using:spnSecret --tenant $using:spnTenantId
+    az login --identity --username $using:managedIdentityClientId
     az config set extension.use_dynamic_install=yes_without_prompt | Out-Null
     az extension add --name customlocation
     az extension add --name stack-hci-vm
@@ -46,7 +44,7 @@ Invoke-Command -VMName "$($HCIBoxConfig.NodeHostConfig[0].Hostname)" -Credential
 $WarningPreference = "SilentlyContinue"
 $ErrorActionPreference = "Continue"
 
-az login --service-principal --username $env:spnClientID --password=$env:spnClientSecret --tenant $env:spnTenantId
+az login --identity --username $managedIdentityClientId
 az extension add --name customlocation
 az extension add -n aksarc --upgrade
 $customLocationID=(az customlocation show --resource-group $env:resourceGroup --name $HCIBoxConfig.rbCustomLocationName --query id -o tsv)

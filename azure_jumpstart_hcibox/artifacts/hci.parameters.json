@@ -26,12 +26,6 @@
     "arbDeploymentAppID": {
       "value": "arbDeploymentAppId-staging"
     },
-    "arbDeploymentAppSecret": {
-      "value": "arbDeploymentAppSecret-staging"
-    },
-    "arbDeploymentSPNObjectID": {
-      "value": "arbDeploymentSPNObjectID-staging"
-    },
     "hciResourceProviderObjectID": {
       "value": "hciResourceProviderObjectID-staging"
     },

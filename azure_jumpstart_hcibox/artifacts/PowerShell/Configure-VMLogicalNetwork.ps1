@@ -14,16 +14,14 @@ $domainCred = new-object -typename System.Management.Automation.PSCredential `
 
 $subId = $env:subscriptionId
 $rg = $env:resourceGroup
-$spnClientId = $env:spnClientId
-$spnSecret = $env:spnClientSecret
-$spnTenantId = $env:spnTenantId
+$managedIdentityClientId = $env:managedIdentityClientId
 $location = $env:azureLocation
 $customLocName = $HCIBoxConfig.rbCustomLocationName
 
 # Create logical networks
 Invoke-Command -VMName "$($HCIBoxConfig.NodeHostConfig[0].Hostname)" -Credential $domainCred -ArgumentList $HCIBoxConfig -ScriptBlock {
     $HCIBoxConfig = $args[0]
-    az login --service-principal --username $using:spnClientID --password=$using:spnSecret --tenant $using:spnTenantId
+    az login --identity --username $using:managedIdentityClientId
     az config set extension.use_dynamic_install=yes_without_prompt
     $customLocationID=(az customlocation show --resource-group $using:rg --name $using:customLocName --query id -o tsv)
 

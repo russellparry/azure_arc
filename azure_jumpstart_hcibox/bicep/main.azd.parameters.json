@@ -8,17 +8,11 @@
         "location": {
             "value": "${AZURE_LOCATION}"
         },
-        "spnClientId": {
-            "value": "${SPN_CLIENT_ID}"
+        "managedIdentityResourceId" :{
+            "value": "${MANAGED_IDENTITY_RESOURCE_ID}"
         },
-        "spnClientSecret": {
-            "value": "${SPN_CLIENT_SECRET}"
-        },
-        "spnTenantId": {
-            "value": "${SPN_TENANT_ID}"
-        },
-        "spnProviderId": {
-            "value": "${SPN_PROVIDER_ID}"
+        "managedIdentityClientId" :{
+            "value": "${MANAGED_IDENTITY_CLIENT_ID}"
         },
         "windowsAdminUsername": {
             "value": "${JS_WINDOWS_ADMIN_USERNAME}"

@@ -23,12 +23,6 @@
     "AzureStackLCMAdminPassword": {
       "value": "AzureStackLCMAdminAdminPassword-staging"
     },
-    "arbDeploymentAppID": {
-      "value": "arbDeploymentAppId-staging"
-    },
-    "hciResourceProviderObjectID": {
-      "value": "hciResourceProviderObjectID-staging"
-    },
     "domainFqdn": {
       "value": "domainFqdn-staging"
     },

@@ -1482,10 +1482,12 @@ function Set-HCIDeployPrereqs {
         }
     }
 
+    Connect-AzAccount -Identity -AccountId $managedIdentityClientId -Subscription $subId
+    $armtoken = ConvertFrom-SecureStringToPlainText -SecureString ((Get-AzAccessToken -AsSecureString).Token)
     foreach ($node in $HCIBoxConfig.NodeHostConfig) {
-        Invoke-Command -VMName $node.Hostname -Credential $localCred -ArgumentList $env:subscriptionId, $env:managedIdentityClientId, $env:resourceGroup, $env:azureLocation -ScriptBlock {
+        Invoke-Command -VMName $node.Hostname -Credential $localCred -ArgumentList $env:subscriptionId, $armtoken, $env:resourceGroup, $env:azureLocation -ScriptBlock {
             $subId = $args[0]
-            $managedIdentityClientId = $args[1]
+            $token = $args[1]
             $resourceGroup = $args[2]
             $location = $args[3]
 
@@ -1520,15 +1522,13 @@ function Set-HCIDeployPrereqs {
             Install-Module Az.Accounts -Force
             Install-Module Az.ConnectedMachine -Force
             Install-Module Az.Resources -Force
-            Connect-AzAccount -Identity -AccountId $managedIdentityClientId -Subscription $subId
-            $armtoken = ConvertFrom-SecureStringToPlainText -SecureString ((Get-AzAccessToken -AsSecureString).Token)
 
             # Workaround for BITS transfer issue
             Get-NetAdapter StorageA | Disable-NetAdapter -Confirm:$false | Out-Null
             Get-NetAdapter StorageB | Disable-NetAdapter -Confirm:$false | Out-Null
 
             #Invoke the registration script.
-            Invoke-AzStackHciArcInitialization -SubscriptionID $subId -ResourceGroup $resourceGroup -Region $location -Cloud "AzureCloud" -ArmAccessToken $armtoken -AccountID $clientId -ErrorAction Continue
+            Invoke-AzStackHciArcInitialization -SubscriptionID $subId -ResourceGroup $resourceGroup -Region $location -Cloud "AzureCloud" -ArmAccessToken $token -AccountID $clientId -ErrorAction Continue
 
             Get-NetAdapter StorageA | Enable-NetAdapter -Confirm:$false | Out-Null
             Get-NetAdapter StorageB | Enable-NetAdapter -Confirm:$false | Out-Null

@@ -1455,7 +1455,8 @@ function Set-HCIDeployPrereqs {
     param (
         $HCIBoxConfig,
         [PSCredential]$localCred,
-        [PSCredential]$domainCred
+        [PSCredential]$domainCred,
+        $subscriptionId
     )
     Invoke-Command -VMName $HCIBoxConfig.MgmtHostConfig.Hostname -Credential $localCred -ScriptBlock {
         $HCIBoxConfig = $using:HCIBoxConfig
@@ -1482,8 +1483,8 @@ function Set-HCIDeployPrereqs {
         }
     }
 
-    Connect-AzAccount -Identity -AccountId $env:managedIdentityClientId -Subscription $subId
-    $tenantId = (Get-AzSubscription -SubscriptionId 0d2c26d5-05bc-455d-97bc-0e0a103251ab).TenantId
+    Connect-AzAccount -Identity -AccountId $env:managedIdentityClientId -Subscription $subscriptionId
+    $tenantId = (Get-AzSubscription -SubscriptionId $subscriptionId).TenantId
     $armtoken = ConvertFrom-SecureStringToPlainText -SecureString ((Get-AzAccessToken -AsSecureString).Token)
     foreach ($node in $HCIBoxConfig.NodeHostConfig) {
         Invoke-Command -VMName $node.Hostname -Credential $localCred -ArgumentList $env:subscriptionId, $tenantId, $armtoken, $env:managedIdentityClientId, $env:resourceGroup, $env:azureLocation -ScriptBlock {
@@ -1874,7 +1875,7 @@ if ($null -ne $tags) {
 $null = Set-AzResourceGroup -ResourceGroupName $env:resourceGroup -Tag $tags
 $null = Set-AzResource -ResourceName $env:computername -ResourceGroupName $env:resourceGroup -ResourceType 'microsoft.compute/virtualmachines' -Tag $tags -Force
 
-Set-HCIDeployPrereqs -HCIBoxConfig $HCIBoxConfig -localCred $localCred -domainCred $domainCred
+Set-HCIDeployPrereqs -HCIBoxConfig $HCIBoxConfig -localCred $localCred -domainCred $domainCred -subscriptionId $subscriptionId
 
 & "$Env:HCIBoxDir\Generate-ARM-Template.ps1"
 

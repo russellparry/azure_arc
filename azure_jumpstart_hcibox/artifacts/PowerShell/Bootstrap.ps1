@@ -136,7 +136,7 @@ foreach ($module in $modules) {
     Install-PSResource -Name $module -Scope AllUsers -Quiet -AcceptLicense -TrustRepository
 }
 
-Connect-AzAccount -Identity
+Connect-AzAccount -Identity -AccountId $managedIdentityClientId -Subscription $subscriptionId
 
 $DeploymentProgressString = "Started bootstrap-script..."
 
